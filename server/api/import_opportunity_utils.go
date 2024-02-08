@@ -162,7 +162,11 @@ func searchForNearestPossibleOptionAndModifyIfItDoesntExist(value string, option
 func convertDateStringToDateObject(dateString string) string {
 	if dateString != "" {
 		// Truncate the extra precision
-		dateString = dateString[:30] + "Z"
+		if len(dateString) > 30 {
+			dateString = dateString[:30]
+		}
+
+		dateString = dateString + "Z"
 
 		// Parse the date string
 		t, err := time.Parse(time.RFC3339Nano, dateString)
@@ -194,16 +198,15 @@ func convertOpportunityToBlock(opportunity Opportunity, block *model.Block, poss
 	stage := searchForNearestPossibleOption(opportunity.Stage, selectPossibleValueById(stageKey, possibleValues))
 	cg := searchForNearestPossibleOption(opportunity.CG, selectPossibleValueById(cgKey, possibleValues))
 	date := convertDateStringToDateObject(opportunity.CreateDate)
-	masterClientName := searchForNearestPossibleOption(opportunity.MasterClientName, selectPossibleValueById(masterClientNameKey, possibleValues))
 
-	fmt.Println("Stage original value: ", opportunity.Stage)
-	fmt.Println("Stage for ", opportunity.OpportunityName, ": ", stage)
-	fmt.Println("CG original value: ", opportunity.CG)
-	fmt.Println("CG for ", opportunity.OpportunityName, ": ", cg)
-	fmt.Println("Date original value: ", opportunity.CreateDate)
-	fmt.Println("Date for ", opportunity.OpportunityName, ": ", date)
-	fmt.Println("MasterClientName original value: ", opportunity.MasterClientName)
-	fmt.Println("MasterClientName for ", opportunity.OpportunityName, ": ", masterClientName)
+	// fmt.Println("Stage original value: ", opportunity.Stage)
+	// fmt.Println("Stage for ", opportunity.OpportunityName, ": ", stage)
+	// fmt.Println("CG original value: ", opportunity.CG)
+	// fmt.Println("CG for ", opportunity.OpportunityName, ": ", cg)
+	// fmt.Println("Date original value: ", opportunity.CreateDate)
+	// fmt.Println("Date for ", opportunity.OpportunityName, ": ", date)
+	// fmt.Println("MasterClientName original value: ", opportunity.MasterClientName)
+	// fmt.Println("MasterClientName for ", opportunity.OpportunityName, ": ", masterClientName)
 
 	block.Title = opportunity.OpportunityName
 	block.Fields["isTemplate"] = false
@@ -213,7 +216,7 @@ func convertOpportunityToBlock(opportunity Opportunity, block *model.Block, poss
 		properties := block.Fields["properties"].(map[string]interface{})
 		properties[opportunityIdKey] = opportunity.OpportunityId
 		properties[stageKey] = stage
-		properties[masterClientNameKey] = masterClientName
+		properties[masterClientNameKey] = opportunity.MasterClientName
 		properties[totalCurrentRevenueKey] = opportunity.TotalCurrentRevenue
 		properties[winProbabilityKey] = opportunity.WinProbability
 		properties[salesCaptureKey] = opportunity.SalesCapture
@@ -225,7 +228,7 @@ func convertOpportunityToBlock(opportunity Opportunity, block *model.Block, poss
 		block.Fields["properties"] = map[string]interface{}{
 			opportunityIdKey:       opportunity.OpportunityId,
 			stageKey:               stage,
-			masterClientNameKey:    masterClientName,
+			masterClientNameKey:    opportunity.MasterClientName,
 			totalCurrentRevenueKey: opportunity.TotalCurrentRevenue,
 			winProbabilityKey:      opportunity.WinProbability,
 			salesCaptureKey:        opportunity.SalesCapture,

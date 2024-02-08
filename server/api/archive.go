@@ -237,7 +237,7 @@ func (a *API) handleArchiveImportOpportunities(w http.ResponseWriter, r *http.Re
 		}
 	}
 
-	opportunitesFromFile = opportunitesFromFile[:5]
+	// opportunitesFromFile = opportunitesFromFile[:5]
 
 	boardTemplate, err := a.app.GetBoard(boardID)
 	if err != nil {
@@ -246,39 +246,39 @@ func (a *API) handleArchiveImportOpportunities(w http.ResponseWriter, r *http.Re
 	}
 
 	// Check if the board contains all the master client names needed for opportunities
-	masterClientNameOptions := selectPossibleValueById(masterClientNameKey, boardTemplate.CardProperties)
-	fmt.Println("Length of Master Client Name Options: ", len(masterClientNameOptions))
-	fmt.Println("Master Client Name Options: ", masterClientNameOptions)
+	// masterClientNameOptions := selectPossibleValueById(masterClientNameKey, boardTemplate.CardProperties)
+	// fmt.Println("Length of Master Client Name Options: ", len(masterClientNameOptions))
+	// fmt.Println("Master Client Name Options: ", masterClientNameOptions)
 
-	for _, opportunity := range opportunitesFromFile {
-		var newOptions []map[string]interface{}
-		newOptions = searchForNearestPossibleOptionAndModifyIfItDoesntExist(opportunity.MasterClientName, masterClientNameOptions)
+	// for _, opportunity := range opportunitesFromFile {
+	// 	var newOptions []map[string]interface{}
+	// 	newOptions = searchForNearestPossibleOptionAndModifyIfItDoesntExist(opportunity.MasterClientName, masterClientNameOptions)
 
-		masterClientNameOptions = newOptions
-	}
+	// 	masterClientNameOptions = newOptions
+	// }
 
-	fmt.Println("Length of new Optionen: ", len(masterClientNameOptions))
-	fmt.Println("Neue Optionen: ", masterClientNameOptions)
+	// fmt.Println("Length of new Optionen: ", len(masterClientNameOptions))
+	// fmt.Println("Neue Optionen: ", masterClientNameOptions)
 
-	var patchBoard *model.BoardPatch = &model.BoardPatch{
-		UpdatedCardProperties: []map[string]interface{}{
-			{
-				"id":      masterClientNameKey,
-				"name":    "Kunde",
-				"options": masterClientNameOptions,
-				"type":    "select",
-			},
-		},
-	}
+	// var patchBoard *model.BoardPatch = &model.BoardPatch{
+	// 	UpdatedCardProperties: []map[string]interface{}{
+	// 		{
+	// 			"id":      masterClientNameKey,
+	// 			"name":    "Kunde",
+	// 			"options": masterClientNameOptions,
+	// 			"type":    "select",
+	// 		},
+	// 	},
+	// }
 
-	a.app.PatchBoard(patchBoard, boardID, userID)
-	newBoardTemplate, err := a.app.GetBoard(boardID)
-	if err != nil {
-		a.errorResponse(w, r, err)
-		return
-	}
+	// a.app.PatchBoard(patchBoard, boardID, userID)
+	// newBoardTemplate, err := a.app.GetBoard(boardID)
+	// if err != nil {
+	// 	a.errorResponse(w, r, err)
+	// 	return
+	// }
 
-	boardTemplate = newBoardTemplate
+	// boardTemplate = newBoardTemplate
 
 	_ = templateBlockID
 
