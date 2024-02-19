@@ -343,6 +343,8 @@ const Sidebar = (props: Props) => {
         return sortedBoards
     }
 
+    const isAdmin = JSON.parse(me.props as any)?.is_admin
+
     return (
         <div className='Sidebar octo-sidebar'>
             {!Utils.isFocalboardPlugin() &&
@@ -427,7 +429,7 @@ const Sidebar = (props: Props) => {
             <div className='octo-spacer'/>
 
             {
-                (!Utils.isFocalboardPlugin()) &&
+                isAdmin && (!Utils.isFocalboardPlugin()) &&
                 <div
                     className='add-board'
                     onClick={props.onBoardTemplateSelectorOpen}

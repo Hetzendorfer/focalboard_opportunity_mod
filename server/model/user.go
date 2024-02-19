@@ -70,6 +70,8 @@ type User struct {
 	Permissions []string `json:"permissions,omitempty"`
 
 	Roles string `json:"roles"`
+
+	Props *string `json:"props"`
 }
 
 // UserPreferencesPatch is a user property patch

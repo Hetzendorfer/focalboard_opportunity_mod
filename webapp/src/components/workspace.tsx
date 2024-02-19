@@ -93,21 +93,7 @@ function CenterContent(props: Props) {
     }, [cardLimitTimestamp, match.params.boardId, templates])
 
     const templateSelector = (
-        <BoardTemplateSelector
-            title={
-                <FormattedMessage
-                    id='BoardTemplateSelector.plugin.no-content-title'
-                    defaultMessage='Create a board'
-                />
-            }
-            description={
-                <FormattedMessage
-                    id='BoardTemplateSelector.plugin.no-content-description'
-                    defaultMessage='Add a board to the sidebar using any of the templates defined below or start from scratch.'
-                />
-            }
-            channelId={match.params.channelId}
-        />
+        <></>
     )
 
     if (match.params.channelId) {
@@ -166,9 +152,7 @@ const Workspace = (props: Props) => {
         setBoardTemplateSelectorOpen(false)
     }, [])
     const openBoardTemplateSelector = useCallback(() => {
-        if (board) {
-            setBoardTemplateSelectorOpen(true)
-        }
+        setBoardTemplateSelectorOpen(true)
     }, [board])
     useEffect(() => {
         setBoardTemplateSelectorOpen(false)

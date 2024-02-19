@@ -70,6 +70,7 @@ func (s *SQLStore) getUsersByCondition(db sq.BaseRunner, condition interface{}, 
 			"create_at",
 			"update_at",
 			"delete_at",
+			"props",
 		).
 		From(s.tablePrefix + "users").
 		Where(sq.Eq{"delete_at": 0}).
@@ -249,6 +250,7 @@ func (s *SQLStore) usersFromRows(rows *sql.Rows) ([]*model.User, error) {
 			&user.CreateAt,
 			&user.UpdateAt,
 			&user.DeleteAt,
+			&user.Props,
 		)
 		if err != nil {
 			return nil, err
