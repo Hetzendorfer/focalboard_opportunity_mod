@@ -3,14 +3,20 @@
 
 import React from 'react'
 
-import {PropertyProps} from '../types'
+import { PropertyProps } from '../types'
 import BaseTextEditor from '../baseTextEditor'
 
 const Number = (props: PropertyProps): JSX.Element => {
     return (
         <BaseTextEditor
             {...props}
-            validator={() => props.propertyValue === '' || !isNaN(parseInt(props.propertyValue as string, 10))}
+            validator={() => {
+                const value = (props.propertyValue as string).trim().replace('€', '')
+                let isValid = true
+                isValid = props.propertyValue === ''
+                isValid = !isNaN(parseInt(value, 10))
+                return isValid
+            }}
         />
     )
 }
