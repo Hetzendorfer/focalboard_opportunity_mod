@@ -1,6 +1,8 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+import store from '../store'
+
 import {Block, createBlock} from './block'
 import {FilterGroup, createFilterGroup} from './filterGroup'
 
@@ -34,7 +36,9 @@ type BoardView = Block & {
 }
 
 function createBoardView(block?: Block): BoardView {
-    return {
+    const userId = store.getState().users.me?.id
+
+    const obj: BoardView = {
         ...createBlock(block),
         type: 'view',
         fields: {
@@ -54,6 +58,17 @@ function createBoardView(block?: Block): BoardView {
             defaultTemplateId: block?.fields.defaultTemplateId || '',
         },
     }
+
+    if (userId && block && block.fields[userId]) {
+        const sortOptions = block.fields[userId].sortOptions || []
+        obj.fields = {
+            ...obj.fields,
+            ...block.fields[userId],
+            sortOptions: sortOptions.map((o: ISortOption) => ({...o})),
+        }
+    }
+
+    return obj
 }
 
 function sortBoardViewsAlphabetically(views: BoardView[]): BoardView[] {

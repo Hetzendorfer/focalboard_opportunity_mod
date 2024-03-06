@@ -166,6 +166,23 @@ func (a *API) handleGetBlocks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// iterate over blocks and change fields
+	for _, block := range blocks {
+		if block.Type == model.TypeView {
+			if block.Fields[userID] != nil {
+				// get sortOptions and filter from string
+				var sortOptions = block.Fields[userID].(map[string]interface{})["sortOptions"]
+				var filter = block.Fields[userID].(map[string]interface{})["filter"]
+				var groupById = block.Fields[userID].(map[string]interface{})["groupById"]
+
+				// remove sortOptions and filter from fields
+				block.Fields["sortOptions"] = sortOptions
+				block.Fields["filter"] = filter
+				block.Fields["groupById"] = groupById
+			}
+		}
+	}
+
 	json, err := json.Marshal(blocks)
 	if err != nil {
 		a.errorResponse(w, r, err)
@@ -578,6 +595,25 @@ func (a *API) handlePatchBlock(w http.ResponseWriter, r *http.Request) {
 	defer a.audit.LogRecord(audit.LevelModify, auditRec)
 	auditRec.AddMeta("boardID", boardID)
 	auditRec.AddMeta("blockID", blockID)
+
+	if block.Type == "view" {
+		var sortOptions = patch.UpdatedFields["sortOptions"]
+		var filter = patch.UpdatedFields["filter"]
+		var groupById = patch.UpdatedFields["groupById"]
+
+		patch.UpdatedFields["sortOptions"] = nil
+		patch.UpdatedFields["filter"] = nil
+		patch.UpdatedFields["groupById"] = nil
+
+		// save sortOptions and filter as a string
+		patch.UpdatedFields[userID] = map[string]interface{}{
+			"sortOptions": sortOptions,
+			"filter":      filter,
+			"groupById":   groupById,
+		}
+
+		fmt.Println(patch.UpdatedFields[userID])
+	}
 
 	if _, err = a.app.PatchBlockAndNotify(blockID, patch, userID, disableNotify); err != nil {
 		a.errorResponse(w, r, err)
