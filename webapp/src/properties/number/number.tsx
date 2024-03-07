@@ -11,10 +11,8 @@ const Number = (props: PropertyProps): JSX.Element => {
         <BaseTextEditor
             {...props}
             validator={(value) => {
-                let valueToValidate = value //the current value of the input field
-                if (typeof valueToValidate === 'undefined') {
-                    valueToValidate = props.propertyValue as string //use the property value, might be diverent from the input field value
-                }
+                const valueToValidate = typeof value === 'undefined' ? props.propertyValue as string : value
+
                 return valueToValidate === '' || !isNaN(parseInt(valueToValidate, 10))
             }}
         />
