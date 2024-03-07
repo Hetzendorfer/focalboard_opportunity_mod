@@ -167,7 +167,7 @@ const ViewHeader = (props: Props) => {
 
             <div className='octo-spacer'/>
 
-            {!props.readonly && canEditBoardProperties &&
+            {!props.readonly && userIsBoardAdmin &&
             <>
                 {/* Card properties */}
 
@@ -177,7 +177,7 @@ const ViewHeader = (props: Props) => {
                 />
             </>
             }
-            {!props.readonly && userIsBoardAdmin &&
+            {!props.readonly &&
             <>
                 {/* Group by */}
 
