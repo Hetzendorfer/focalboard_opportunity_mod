@@ -67,24 +67,11 @@ const ViewHeader = (props: Props) => {
     const [showFilter, setShowFilter] = useState(false)
     const [lockFilterOnClose, setLockFilterOnClose] = useState(false)
     const intl = useIntl()
-    const canEditBoardProperties = useHasCurrentBoardPermissions([
-        Permission.ManageBoardProperties,
-    ])
-    const userIsBoardAdmin = useHasCurrentBoardPermissions([
-        Permission.DeleteBoard,
-    ])
-    const {
-        board,
-        activeView,
-        views,
-        groupByProperty,
-        cards,
-        dateDisplayProperty,
-    } = props
+    const canEditBoardProperties = useHasCurrentBoardPermissions([Permission.ManageBoardProperties])
+    const userIsBoardAdmin = useHasCurrentBoardPermissions([Permission.DeleteBoard])
+    const {board, activeView, views, groupByProperty, cards, dateDisplayProperty} = props
 
-    const withGroupBy =
-        activeView.fields.viewType === 'board' ||
-        activeView.fields.viewType === 'table'
+    const withGroupBy = activeView.fields.viewType === 'board' || activeView.fields.viewType === 'table'
     const withDisplayBy = activeView.fields.viewType === 'calendar'
     const withSortBy = activeView.fields.viewType !== 'calendar'
 
@@ -94,9 +81,7 @@ const ViewHeader = (props: Props) => {
         setViewTitle(activeView.title)
     }, [activeView.title])
 
-    const hasFilter =
-        activeView.fields.filter &&
-        activeView.fields.filter.filters?.length > 0
+    const hasFilter = activeView.fields.filter && activeView.fields.filter.filters?.length > 0
 
     const isOnboardingBoard = props.board.title === OnboardingBoardTitle
     const onboardingTourStarted = useAppSelector(getOnboardingTourStarted)
@@ -106,8 +91,7 @@ const ViewHeader = (props: Props) => {
     const currentCard = useAppSelector(getCurrentCard)
     const noCardOpen = !currentCard
 
-    const showTourBaseCondition =
-        isOnboardingBoard &&
+    const showTourBaseCondition = isOnboardingBoard &&
         onboardingTourStarted &&
         noCardOpen &&
         onboardingTourCategory === TOUR_BOARD &&
@@ -133,16 +117,12 @@ const ViewHeader = (props: Props) => {
 
     const showAddViewTourStep = showTourBaseCondition && delayComplete
 
-    const [showViewLimitDialog, setShowViewLimitDialog] =
-        useState<boolean>(false)
+    const [showViewLimitDialog, setShowViewLimitDialog] = useState<boolean>(false)
 
     const limits = useAppSelector(getLimits)
 
     const allowCreateView = (): boolean => {
-        if (
-            limits &&
-            (limits.views === LimitUnlimited || views.length < limits.views)
-        ) {
+        if (limits && (limits.views === LimitUnlimited || views.length < limits.views)) {
             setShowViewLimitDialog(false)
             return true
         }
@@ -158,12 +138,7 @@ const ViewHeader = (props: Props) => {
                     value={viewTitle}
                     placeholderText='Untitled View'
                     onSave={(): void => {
-                        mutator.changeBlockTitle(
-                            activeView.boardId,
-                            activeView.id,
-                            activeView.title,
-                            viewTitle,
-                        )
+                        mutator.changeBlockTitle(activeView.boardId, activeView.id, activeView.title, viewTitle)
                     }}
                     onCancel={(): void => {
                         setViewTitle(activeView.title)
@@ -174,130 +149,116 @@ const ViewHeader = (props: Props) => {
                     spellCheck={true}
                     autoExpand={false}
                 />
-                {!props.readonly && (
-                    <div>
-                        <MenuWrapper
-                            label={intl.formatMessage({
-                                id: 'ViewHeader.view-menu',
-                                defaultMessage: 'View menu',
-                            })}
-                        >
-                            <IconButton icon={<DropdownIcon/>}/>
-                            <ViewMenu
-                                board={board}
-                                activeView={activeView}
-                                views={views}
-                                readonly={
-                                    props.readonly || !canEditBoardProperties
-                                }
-                                allowCreateView={allowCreateView}
-                            />
-                        </MenuWrapper>
-                        {showAddViewTourStep && <AddViewTourStep/>}
-                    </div>
-                )}
+                {!props.readonly && (<div>
+                    <MenuWrapper label={intl.formatMessage({id: 'ViewHeader.view-menu', defaultMessage: 'View menu'})}>
+                        <IconButton icon={<DropdownIcon/>}/>
+                        <ViewMenu
+                            board={board}
+                            activeView={activeView}
+                            views={views}
+                            readonly={props.readonly || !canEditBoardProperties}
+                            allowCreateView={allowCreateView}
+                        />
+                    </MenuWrapper>
+                    {showAddViewTourStep && <AddViewTourStep/>}
+                </div>)}
+
             </div>
 
             <div className='octo-spacer'/>
 
-            {!props.readonly && userIsBoardAdmin && (
-                <>
-                    {/* Card properties */}
+            {!props.readonly && canEditBoardProperties &&
+            <>
+                {/* Card properties */}
 
-                    <ViewHeaderPropertiesMenu
-                        properties={board.cardProperties}
+                <ViewHeaderPropertiesMenu
+                    properties={board.cardProperties}
+                    activeView={activeView}
+                />
+            </>
+            }
+            {!props.readonly && userIsBoardAdmin &&
+            <>
+                {/* Group by */}
+
+                {withGroupBy &&
+                <ViewHeaderGroupByMenu
+                    properties={board.cardProperties}
+                    activeView={activeView}
+                    groupByProperty={groupByProperty}
+                />}
+
+                {/* Display by */}
+
+                {withDisplayBy &&
+                <ViewHeaderDisplayByMenu
+                    properties={board.cardProperties}
+                    activeView={activeView}
+                    dateDisplayPropertyName={dateDisplayProperty?.name}
+                />}
+
+                {/* Filter */}
+
+                <ModalWrapper>
+                    <Button
+                        active={hasFilter}
+                        onClick={() => setShowFilter(!showFilter)}
+                        onMouseOver={() => setLockFilterOnClose(true)}
+                        onMouseLeave={() => setLockFilterOnClose(false)}
+                    >
+                        <FormattedMessage
+                            id='ViewHeader.filter'
+                            defaultMessage='Filter'
+                        />
+                    </Button>
+                    {showFilter &&
+                    <FilterComponent
+                        board={board}
                         activeView={activeView}
-                    />
-                </>
-            )}
-            {!props.readonly && (
-                <>
-                    {/* Group by */}
+                        onClose={() => {
+                            if (!lockFilterOnClose) {
+                                setShowFilter(false)
+                            }
+                        }}
+                    />}
+                </ModalWrapper>
 
-                    {withGroupBy && (
-                        <ViewHeaderGroupByMenu
-                            properties={board.cardProperties}
-                            activeView={activeView}
-                            groupByProperty={groupByProperty}
-                        />
-                    )}
+                {/* Sort */}
 
-                    {/* Display by */}
-
-                    {withDisplayBy && (
-                        <ViewHeaderDisplayByMenu
-                            properties={board.cardProperties}
-                            activeView={activeView}
-                            dateDisplayPropertyName={dateDisplayProperty?.name}
-                        />
-                    )}
-
-                    {/* Filter */}
-
-                    <ModalWrapper>
-                        <Button
-                            active={hasFilter}
-                            onClick={() => setShowFilter(!showFilter)}
-                            onMouseOver={() => setLockFilterOnClose(true)}
-                            onMouseLeave={() => setLockFilterOnClose(false)}
-                        >
-                            <FormattedMessage
-                                id='ViewHeader.filter'
-                                defaultMessage='Filter'
-                            />
-                        </Button>
-                        {showFilter && (
-                            <FilterComponent
-                                board={board}
-                                activeView={activeView}
-                                onClose={() => {
-                                    if (!lockFilterOnClose) {
-                                        setShowFilter(false)
-                                    }
-                                }}
-                            />
-                        )}
-                    </ModalWrapper>
-
-                    {/* Sort */}
-
-                    {withSortBy && (
-                        <ViewHeaderSortMenu
-                            properties={board.cardProperties}
-                            activeView={activeView}
-                            orderedCards={cards}
-                        />
-                    )}
-                </>
-            )}
+                {withSortBy &&
+                <ViewHeaderSortMenu
+                    properties={board.cardProperties}
+                    activeView={activeView}
+                    orderedCards={cards}
+                />
+                }
+            </>
+            }
             {/* Search */}
 
             <ViewHeaderSearch/>
 
             {/* Options menu */}
 
-            {!props.readonly && (
-                <>
-                    <ViewHeaderActionsMenu
-                        board={board}
-                        activeView={activeView}
-                        cards={cards}
+            {!props.readonly &&
+            <>
+                <ViewHeaderActionsMenu
+                    board={board}
+                    activeView={activeView}
+                    cards={cards}
+                />
+
+                {/* New card button */}
+
+                <BoardPermissionGate permissions={[Permission.ManageBoardCards]}>
+                    <NewCardButton
+                        addCard={props.addCard}
+                        addCardFromTemplate={props.addCardFromTemplate}
+                        addCardTemplate={props.addCardTemplate}
+                        editCardTemplate={props.editCardTemplate}
                     />
-
-                    {/* New card button */}
-
-                    <BoardPermissionGate
-                        permissions={[Permission.ManageBoardCards]}
-                    >
-                        <NewCardButton
-                            addCard={props.addCard}
-                            addCardFromTemplate={props.addCardFromTemplate}
-                            addCardTemplate={props.addCardTemplate}
-                            editCardTemplate={props.editCardTemplate}
-                        />
-                    </BoardPermissionGate>
-                </>
-            )}
+                </BoardPermissionGate>
+            </>}
 
             <ViewLimitModalWrapper
                 show={showViewLimitDialog}
