@@ -13,7 +13,7 @@ const Number = (props: PropertyProps): JSX.Element => {
             validator={(value) => {
                 let valueToValidate = value //the current value of the input field
                 if (typeof valueToValidate === 'undefined') {
-                    valueToValidate = props.propertyValue as string //use the property value, might be diverent from the input field value
+                    valueToValidate = props.propertyValue as string //use the property value, might be different from the input field value
                 }
                 return valueToValidate === '' || !isNaN(parseInt(valueToValidate, 10))
             }}
