@@ -70,10 +70,9 @@ const ViewHeader = (props: Props) => {
     const canEditBoardProperties = useHasCurrentBoardPermissions([
         Permission.ManageBoardProperties,
     ])
-    const canDeleteBoard = useHasCurrentBoardPermissions([
+    const userIsBoardAdmin = useHasCurrentBoardPermissions([
         Permission.DeleteBoard,
     ])
-    const userIsBoardAdmin = canEditBoardProperties && canDeleteBoard
     const {
         board,
         activeView,
