@@ -3,19 +3,19 @@
 
 import React from 'react'
 
-import { PropertyProps } from '../types'
+import {PropertyProps} from '../types'
 import BaseTextEditor from '../baseTextEditor'
 
 const Number = (props: PropertyProps): JSX.Element => {
     return (
         <BaseTextEditor
             {...props}
-            validator={() => {
-                const value = (props.propertyValue as string).trim().replace('€', '')
-                let isValid = true
-                isValid = props.propertyValue === ''
-                isValid = !isNaN(parseInt(value, 10))
-                return isValid
+            validator={(value) => {
+                let valueToValidate = value //the current value of the input field
+                if (typeof valueToValidate === 'undefined') {
+                    valueToValidate = props.propertyValue as string //use the property value, might be diverent from the input field value
+                }
+                return valueToValidate === '' || !isNaN(parseInt(valueToValidate, 10))
             }}
         />
     )
