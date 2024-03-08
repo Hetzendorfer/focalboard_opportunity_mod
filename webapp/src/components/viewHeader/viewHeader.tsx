@@ -68,7 +68,7 @@ const ViewHeader = (props: Props) => {
     const [lockFilterOnClose, setLockFilterOnClose] = useState(false)
     const intl = useIntl()
     const canEditBoardProperties = useHasCurrentBoardPermissions([Permission.ManageBoardProperties])
-
+    const userIsBoardAdmin = useHasCurrentBoardPermissions([Permission.DeleteBoard])
     const {board, activeView, views, groupByProperty, cards, dateDisplayProperty} = props
 
     const withGroupBy = activeView.fields.viewType === 'board' || activeView.fields.viewType === 'table'
@@ -167,7 +167,7 @@ const ViewHeader = (props: Props) => {
 
             <div className='octo-spacer'/>
 
-            {!props.readonly && canEditBoardProperties &&
+            {!props.readonly && userIsBoardAdmin &&
             <>
                 {/* Card properties */}
 
@@ -175,7 +175,10 @@ const ViewHeader = (props: Props) => {
                     properties={board.cardProperties}
                     activeView={activeView}
                 />
-
+            </>
+            }
+            {!props.readonly &&
+            <>
                 {/* Group by */}
 
                 {withGroupBy &&
@@ -231,7 +234,6 @@ const ViewHeader = (props: Props) => {
                 }
             </>
             }
-
             {/* Search */}
 
             <ViewHeaderSearch/>
