@@ -562,7 +562,7 @@ func (a *API) handlePatchBlock(w http.ResponseWriter, r *http.Request) {
 	val := r.URL.Query().Get("disable_notify")
 	disableNotify := val == True
 
-	if !a.permissions.HasPermissionToBoard(userID, boardID, model.PermissionManageBoardCards) {
+	if !a.permissions.HasPermissionToBoard(userID, boardID, model.PermissionViewBoard) {
 		a.errorResponse(w, r, model.NewErrPermission("access denied to make board changes"))
 		return
 	}
