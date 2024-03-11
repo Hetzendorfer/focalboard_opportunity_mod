@@ -605,14 +605,37 @@ func (a *API) handlePatchBlock(w http.ResponseWriter, r *http.Request) {
 		patch.UpdatedFields["filter"] = nil
 		patch.UpdatedFields["groupById"] = nil
 
-		// save sortOptions and filter as a string
-		patch.UpdatedFields[userID] = map[string]interface{}{
-			"sortOptions": sortOptions,
-			"filter":      filter,
-			"groupById":   groupById,
+		patch.UpdatedFields[userID] = block.Fields[userID]
+
+		if sortOptions != nil {
+			if updatedFields, ok := patch.UpdatedFields[userID].(map[string]interface{}); ok {
+				updatedFields["sortOptions"] = sortOptions
+			} else {
+				patch.UpdatedFields[userID] = map[string]interface{}{
+					"sortOptions": sortOptions,
+				}
+			}
 		}
 
-		fmt.Println(patch.UpdatedFields[userID])
+		if filter != nil {
+			if updatedFields, ok := patch.UpdatedFields[userID].(map[string]interface{}); ok {
+				updatedFields["filter"] = filter
+			} else {
+				patch.UpdatedFields[userID] = map[string]interface{}{
+					"filter": filter,
+				}
+			}
+		}
+
+		if groupById != nil {
+			if updatedFields, ok := patch.UpdatedFields[userID].(map[string]interface{}); ok {
+				updatedFields["groupById"] = groupById
+			} else {
+				patch.UpdatedFields[userID] = map[string]interface{}{
+					"groupById": groupById,
+				}
+			}
+		}
 	}
 
 	if _, err = a.app.PatchBlockAndNotify(blockID, patch, userID, disableNotify); err != nil {
