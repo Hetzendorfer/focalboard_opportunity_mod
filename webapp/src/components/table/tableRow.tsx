@@ -86,7 +86,12 @@ const TableRow = (props: Props) => {
     }, [title, setTitle])
 
     const visiblePropertyTemplates = useMemo(() => (
-        visiblePropertyIds.map((id) => board.cardProperties.find((t) => t.id === id)).filter((i) => i) as IPropertyTemplate[]
+        [...visiblePropertyIds.map((id) => board.cardProperties.find((t) => t.id === id)).filter((i) => i), {
+            id: 'lastChangedBy',
+            name: 'Last Changed By',
+            type: 'text',
+            options: [],
+        }] as IPropertyTemplate[]
     ), [board.cardProperties, visiblePropertyIds])
 
     let className = props.isSelected ? 'TableRow octo-table-row selected' : 'TableRow octo-table-row'

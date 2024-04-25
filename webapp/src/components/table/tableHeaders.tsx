@@ -62,7 +62,7 @@ const TableHeaders = (props: Props): JSX.Element => {
                     }
                 }
 
-                // remove the "value" portion of the original calculation
+                // remove the 'value' portion of the original calculation
                 columnFontPadding.padding -= (perItemPadding * valueCount)
             }
         }
@@ -89,7 +89,12 @@ const TableHeaders = (props: Props): JSX.Element => {
     }, [activeView, board, cards])
 
     const visiblePropertyTemplates = useMemo(() => (
-        activeView.fields.visiblePropertyIds.map((id) => board.cardProperties.find((t) => t.id === id)).filter((i) => i) as IPropertyTemplate[]
+        [...activeView.fields.visiblePropertyIds.map((id) => board.cardProperties.find((t) => t.id === id)).filter((i) => i), {
+            id: 'lastChangedBy',
+            name: 'Last Changed By',
+            type: 'text',
+            options: [],
+        }] as IPropertyTemplate[]
     ), [board.cardProperties, activeView.fields.visiblePropertyIds])
 
     const onDropToColumn = useCallback(async (template: IPropertyTemplate, container: IPropertyTemplate) => {
@@ -140,7 +145,7 @@ const TableHeaders = (props: Props): JSX.Element => {
                     <TableHeader
                         name={template.name}
                         sorted={sorted}
-                        readonly={props.readonly}
+                        readonly={props.readonly || template.id === 'lastChangedBy'}
                         board={board}
                         activeView={activeView}
                         cards={cards}

@@ -101,7 +101,15 @@ func (a *App) PatchBlockAndNotify(blockID string, blockPatch *model.BlockPatch, 
 	if err != nil {
 		return nil, err
 	}
+
+	user, err := a.store.GetUserByID(block.ModifiedBy)
+	if err != nil {
+		return nil, err
+	}
+	block.ModifiedBy = user.Username
+
 	a.blockChangeNotifier.Enqueue(func() error {
+
 		// broadcast on websocket
 		a.wsAdapter.BroadcastBlockChange(board.TeamID, block)
 

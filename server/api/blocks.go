@@ -181,6 +181,14 @@ func (a *API) handleGetBlocks(w http.ResponseWriter, r *http.Request) {
 				block.Fields["groupById"] = groupById
 			}
 		}
+
+		user, err := a.app.GetUser(block.ModifiedBy)
+		if err != nil {
+			a.errorResponse(w, r, err)
+			return
+		}
+
+		block.ModifiedBy = user.Username
 	}
 
 	json, err := json.Marshal(blocks)
@@ -562,7 +570,7 @@ func (a *API) handlePatchBlock(w http.ResponseWriter, r *http.Request) {
 	val := r.URL.Query().Get("disable_notify")
 	disableNotify := val == True
 
-	if !a.permissions.HasPermissionToBoard(userID, boardID, model.PermissionManageBoardCards) {
+	if !a.permissions.HasPermissionToBoard(userID, boardID, model.PermissionViewBoard) {
 		a.errorResponse(w, r, model.NewErrPermission("access denied to make board changes"))
 		return
 	}
@@ -720,7 +728,7 @@ func (a *API) handlePatchBlocks(w http.ResponseWriter, r *http.Request) {
 			a.errorResponse(w, r, model.NewErrForbidden("access denied to make board changes"))
 			return
 		}
-		if !a.permissions.HasPermissionToBoard(userID, block.BoardID, model.PermissionManageBoardCards) {
+		if !a.permissions.HasPermissionToBoard(userID, block.BoardID, model.PermissionViewBoard) {
 			a.errorResponse(w, r, model.NewErrPermission("access denied to make board changesa"))
 			return
 		}

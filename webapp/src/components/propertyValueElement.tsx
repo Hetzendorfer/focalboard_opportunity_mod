@@ -23,6 +23,10 @@ const PropertyValueElement = (props: Props): JSX.Element => {
     if (propertyValue === undefined) {
         propertyValue = ''
     }
+
+    if (propertyTemplate.id === 'lastChangedBy') {
+        propertyValue = card.modifiedBy
+    }
     const property = propsRegistry.get(propertyTemplate.type)
     const Editor = property.Editor
     return (
@@ -30,7 +34,7 @@ const PropertyValueElement = (props: Props): JSX.Element => {
             property={property}
             card={card}
             board={board}
-            readOnly={readOnly}
+            readOnly={readOnly || propertyTemplate.id === 'lastChangedBy'}
             showEmptyPlaceholder={showEmptyPlaceholder}
             propertyTemplate={propertyTemplate}
             propertyValue={propertyValue}
