@@ -238,7 +238,7 @@ const TableRow = (props: Props) => {
                     <div
                         className='octo-table-cell'
                         key={template.id}
-                        style={{width: columnResize.width(template.id)}}
+                        style={{width: template.id === 'lastChangedBy' ? '200px' : columnResize.width(template.id)}}
                         ref={(ref) => columnResize.updateRef(card.id, template.id, ref)}
                     >
                         <PropertyValueElement

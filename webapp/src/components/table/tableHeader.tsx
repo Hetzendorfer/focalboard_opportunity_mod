@@ -60,7 +60,7 @@ const TableHeader = (props: Props): JSX.Element => {
             style={{
                 overflow: 'unset',
                 opacity: isDragging ? 0.5 : 1,
-                width: columnResize.width(templateId),
+                width: templateId === 'lastChangedBy' ? '200px' : columnResize.width(templateId),
             }}
             ref={(ref) => {
                 if (ref && templateId !== Constants.titleColumnId) {
