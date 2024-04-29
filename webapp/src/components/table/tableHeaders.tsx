@@ -17,6 +17,13 @@ import './table.scss'
 import TableHeader from './tableHeader'
 import {useColumnResize} from './tableColumnResizeContext'
 
+export const lastChangedByProperty = {
+    id: 'lastChangedBy',
+    name: 'Last Changed By',
+    type: 'text',
+    options: [],
+} as IPropertyTemplate
+
 type Props = {
     board: Board
     cards: Card[]
@@ -89,12 +96,7 @@ const TableHeaders = (props: Props): JSX.Element => {
     }, [activeView, board, cards])
 
     const visiblePropertyTemplates = useMemo(() => (
-        [...activeView.fields.visiblePropertyIds.map((id) => board.cardProperties.find((t) => t.id === id)).filter((i) => i), {
-            id: 'lastChangedBy',
-            name: 'Last Changed By',
-            type: 'text',
-            options: [],
-        }] as IPropertyTemplate[]
+        [...activeView.fields.visiblePropertyIds.map((id) => [...board.cardProperties, lastChangedByProperty].find((t) => t.id === id)).filter((i) => i)] as IPropertyTemplate[]
     ), [board.cardProperties, activeView.fields.visiblePropertyIds])
 
     const onDropToColumn = useCallback(async (template: IPropertyTemplate, container: IPropertyTemplate) => {

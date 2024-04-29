@@ -26,6 +26,7 @@ import CardActionsMenu from '../cardActionsMenu/cardActionsMenu'
 import {useColumnResize} from './tableColumnResizeContext'
 
 import './tableRow.scss'
+import {lastChangedByProperty} from './tableHeaders'
 
 type Props = {
     board: Board
@@ -86,12 +87,7 @@ const TableRow = (props: Props) => {
     }, [title, setTitle])
 
     const visiblePropertyTemplates = useMemo(() => (
-        [...visiblePropertyIds.map((id) => board.cardProperties.find((t) => t.id === id)).filter((i) => i), {
-            id: 'lastChangedBy',
-            name: 'Last Changed By',
-            type: 'text',
-            options: [],
-        }] as IPropertyTemplate[]
+        [...visiblePropertyIds.map((id) => [...board.cardProperties, lastChangedByProperty].find((t) => t.id === id)).filter((i) => i)] as IPropertyTemplate[]
     ), [board.cardProperties, visiblePropertyIds])
 
     let className = props.isSelected ? 'TableRow octo-table-row selected' : 'TableRow octo-table-row'

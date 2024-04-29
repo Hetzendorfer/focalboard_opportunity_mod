@@ -3,6 +3,8 @@
 import React from 'react'
 import {FormattedMessage, useIntl} from 'react-intl'
 
+import {lastChangedByProperty} from '../../components/table/tableHeaders'
+
 import {Constants} from '../../constants'
 import {IPropertyTemplate} from '../../blocks/board'
 import {BoardView} from '../../blocks/boardView'
@@ -11,8 +13,12 @@ import Button from '../../widgets/buttons/button'
 import Menu from '../../widgets/menu'
 import MenuWrapper from '../../widgets/menuWrapper'
 
+type Mutable<T> = {
+    -readonly [P in keyof T]: T[P];
+}
+
 type Props = {
-    properties: readonly IPropertyTemplate[]
+    properties: IPropertyTemplate[]
     activeView: BoardView
 }
 const ViewHeaderPropertiesMenu = (props: Props) => {
@@ -29,6 +35,14 @@ const ViewHeaderPropertiesMenu = (props: Props) => {
             newVisiblePropertyIds = [...visiblePropertyIds, propertyId]
         }
         mutator.changeViewVisibleProperties(activeView.boardId, activeView.id, visiblePropertyIds, newVisiblePropertyIds)
+    }
+
+    const tempProperties = Array.from(properties) as Mutable<IPropertyTemplate[]>
+
+    if (tempProperties.findIndex((el) => el.id === 'lastChangedBy') === -1) {
+        // eslint-disable-next-line no-console
+        console.log(tempProperties)
+        tempProperties.push(lastChangedByProperty)
     }
 
     return (
@@ -49,7 +63,7 @@ const ViewHeaderPropertiesMenu = (props: Props) => {
                         suppressItemClicked={true}
                         onClick={toggleVisibility}
                     />}
-                {properties?.map((option: IPropertyTemplate) => (
+                {tempProperties?.map((option: IPropertyTemplate) => (
                     <Menu.Switch
                         key={option.id}
                         id={option.id}
